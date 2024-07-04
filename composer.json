@@ -1,0 +1,31 @@
+{
+  "name": "lps/dyn-be-layouts",
+  "description": "Dynamic Backend Layouts for TYPO3 CMS",
+  "type": "typo3-cms-extension",
+  "keywords": [
+    "TYPO3 CMS",
+    "templating"
+  ],
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Lars Peter Søndergaard",
+      "email": "lars.peter@sondergaard.de",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "LPS\\DynBeLayouts\\": "Classes/"
+    }
+  },
+  "require": {
+    "php": "^8.1",
+    "typo3/cms-core": "^12.4"
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "dyn_be_layouts"
+    }
+  }
+}
