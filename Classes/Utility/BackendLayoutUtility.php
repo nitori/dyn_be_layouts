@@ -196,17 +196,8 @@ class BackendLayoutUtility
         $totalColumns = array_reduce(array_values($columnCounts), fn($a, $b) => (int)gmp_lcm($a, $b), 1);
         foreach ($config['rows.'] as $rowKey => $row) {
             $perColSpan = $totalColumns / $columnCounts[$rowKey];
-            $rowPos = (int)trim($rowKey, '.') * 100;
-
             foreach ($row['columns.'] as $colKey => $column) {
                 $colSpan = (int)($column['colspan'] ?? 1);
-                $config['rows.'][$rowKey]['columns.'][$colKey]['colspan'] = $colSpan * $perColSpan;
-
-                if (($column['colPos'] ?? null) !== null) {
-                    $colPos = (int)$column['colPos'];
-                    $config['rows.'][$rowKey]['columns.'][$colKey]['colPos'] = $rowPos + $colPos;
-                }
-
                 $config['rows.'][$rowKey]['columns.'][$colKey]['colspan'] = $colSpan * $perColSpan;
             }
         }

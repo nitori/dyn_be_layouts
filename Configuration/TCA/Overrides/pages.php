@@ -9,10 +9,10 @@
                 'exclude' => true,
                 'label' => 'Backend-Layout Setup',
                 'config' => [
-                    'type' => 'select',
-                    'renderType' => 'selectMultipleSideBySide',
-                    'itemsProcFunc' => \LPS\DynBeLayouts\Utility\BackendLayoutUtility::class . '->getBackendLayoutsForTca',
-                    'multiple' => true,
+                    'type' => 'inline',
+                    'foreign_table' => 'tx_dynbelayouts_domain_model_layout',
+                    'foreign_field' => 'page',
+                    'foreign_sortby' => 'sorting',
                 ],
             ],
         ]

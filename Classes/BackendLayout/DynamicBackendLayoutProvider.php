@@ -8,6 +8,8 @@ use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -44,18 +46,43 @@ class DynamicBackendLayoutProvider implements DataProviderInterface
             return null;
         }
 
-        $templateKeys = GeneralUtility::trimExplode(',', $row['tx_dynbelayouts_setup'] ?? '', true);
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_dynbelayouts_domain_model_layout');
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
+
+        $layoutRows = $queryBuilder->select('uid', 'template')
+            ->from('tx_dynbelayouts_domain_model_layout')
+            ->where(
+                'page=' . (int)$row['uid']
+            )
+            ->orderBy('sorting')
+            ->executeQuery()
+            ->fetchAllAssociative();
+
         $templates = BackendLayoutUtility::getTemplates($row['uid']);
 
         $rows = [];
         $rowKey = 1;
-        foreach ($templateKeys as $key) {
+        foreach ($layoutRows as $layoutRow) {
+            $colPosOffset = $layoutRow['uid'] * 10000;
+
+            $key = $layoutRow['template'];
             if (!isset($templates[$key])) {
                 $this->flash('Backend Layout Template not found: ' . $key,
                     'Error', ContextualFeedbackSeverity::ERROR);
                 continue;
             }
+
             foreach ($templates[$key]['config.'] as $row) {
+                foreach ($row['columns.'] as $colKey => $column) {
+                    if (isset($column['colPos'])) {
+                        $colPos = (int)$column['colPos'];
+                        $row['columns.'][$colKey]['colPos'] = $colPosOffset + $colPos;
+                    }
+                }
+
                 $rows[$rowKey . '.'] = $row;
                 $rowKey++;
             }

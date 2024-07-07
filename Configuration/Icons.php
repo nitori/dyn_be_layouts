@@ -3,12 +3,8 @@
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 
 return [
-    'lps-dynbelayouts-split-row' => [
+    'dyn_be_layouts-ext-icon' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:dyn_be_layouts/Resources/Public/Icons/split-row.svg',
-    ],
-    'lps-dynbelayouts-split-column' => [
-        'provider' => SvgIconProvider::class,
-        'source' => 'EXT:dyn_be_layouts/Resources/Public/Icons/split-column.svg',
+        'source' => 'EXT:dyn_be_layouts/Resources/Public/Icons/Extension.svg',
     ],
 ];
