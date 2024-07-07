@@ -12,3 +12,12 @@ services:
 
   LPS\DynBeLayouts\BackendLayout\DynamicBackendLayoutProvider:
     public: true
+
+  LPS\DynBeLayouts\Utility\BackendLayoutUtility:
+    public: true
+
+  LPS\DynBeLayouts\Service\BackendLayoutTemplateService:
+    public: true
+
+  LPS\DynBeLayouts\DataProcessor\GridDataProcessor:
+    public: true
