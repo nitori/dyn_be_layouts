@@ -1,0 +1,76 @@
+layouts:
+  Container:
+    title: Container
+    columns:
+      - column: 0
+        title: Content
+    layout:
+      - "0"
+
+  Container50x50:
+    title: Container 50x50
+    columns:
+      - column: 0
+        title: Left
+      - column: 1
+        title: Right
+    layout:
+      - "0 1"
+
+  Container66x33:
+    title: Container 66x33
+    columns:
+      - column: 0
+        title: Main Content
+      - column: 1
+        title: Sidebar
+    layout:
+      - "0 0 1"
+
+  Container33x66:
+    title: Container 33x66
+    columns:
+      - column: 0
+        title: Sidebar
+      - column: 1
+        title: Main Content
+    layout:
+      - "0 1 1"
+
+  Container33x33x33:
+    title: Container 33x33x33
+    columns:
+      - column: 0
+        title: Left
+      - column: 1
+        title: Center
+      - column: 2
+        title: Right
+    layout:
+      - "0 1 2"
+
+  ContainerRowSpan:
+    title: Container with Row Span
+    columns:
+      - column: 0
+        title: Main Content
+      - column: 1
+        title: Foobar
+      - column: 2
+        title: Spam
+      - column: 3
+        title: Baz
+    layout:
+      - "1 1 0 2"
+      - "1 1 3 2"
+
+  Test:
+    title: Test
+    columns:
+      - column: 0
+        title: Main Content
+      - column: 1
+        title: Sidebar
+    layout:
+      - "0"
+      - "1"

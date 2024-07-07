@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  LPS\DynBeLayouts\:
+    resource: '../Classes/*'
+
+  LPS\DynBeLayouts\Controller\BackendController:
+    public: true
+
+  LPS\DynBeLayouts\BackendLayout\DynamicBackendLayoutProvider:
+    public: true

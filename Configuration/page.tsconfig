@@ -1,3 +1,9 @@
 templates.typo3/cms-backend {
     1643293191 = lps/dyn-be-layouts:Resources/Private/BackendOverrides
 }
+
+tx_dynbelayouts {
+    yamlFiles {
+        10 = EXT:dyn_be_layouts/Configuration/BackendLayouts.yaml
+    }
+}

@@ -9,9 +9,10 @@
                 'exclude' => true,
                 'label' => 'Backend-Layout Setup',
                 'config' => [
-                    'type' => 'text',
-                    'cols' => 40,
-                    'rows' => 15,
+                    'type' => 'select',
+                    'renderType' => 'selectMultipleSideBySide',
+                    'itemsProcFunc' => \LPS\DynBeLayouts\Utility\BackendLayoutUtility::class . '->getBackendLayoutsForTca',
+                    'multiple' => true,
                 ],
             ],
         ]
