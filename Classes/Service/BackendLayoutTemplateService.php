@@ -32,6 +32,9 @@ class BackendLayoutTemplateService implements SingletonInterface
                     if (isset($column['colPos'])) {
                         $colPos = (int)$column['colPos'];
                         $row['columns.'][$colKey]['colPos'] = $colPosOffset + $colPos;
+                        if (isset($row['columns.'][$colKey]['name']) && !empty($layout['title'])) {
+                            $row['columns.'][$colKey]['name'] = $layout['title'] . ': ' . $row['columns.'][$colKey]['name'];
+                        }
                     }
                 }
 
@@ -52,7 +55,7 @@ class BackendLayoutTemplateService implements SingletonInterface
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
-        $rows = $queryBuilder->select('uid', 'template')
+        $rows = $queryBuilder->select('uid', 'title', 'template')
             ->from('tx_dynbelayouts_domain_model_layout')
             ->where(
                 'page=' . $pageId

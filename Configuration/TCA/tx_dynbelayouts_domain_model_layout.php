@@ -6,7 +6,7 @@ if (!defined('TYPO3')) {
 return [
     'ctrl' => [
         'title' => 'Layout',
-        'label' => 'template',
+        'label' => 'title',
         'sortby' => 'sorting',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -30,6 +30,7 @@ return [
     'types' => [
         '0' => ['showitem' => '
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
+                title,
                 template,
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
                 --palette--;;language,
@@ -127,6 +128,15 @@ return [
         'page' => [
             'config' => [
                 'type' => 'passthrough',
+            ],
+        ],
+        'title' => [
+            'exclude' => false,
+            'label' => 'Title of this section',
+            'config' => [
+                'type' => 'input',
+                'size' => 50,
+                'eval' => 'trim',
             ],
         ],
         'template' => [
