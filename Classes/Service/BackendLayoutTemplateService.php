@@ -13,12 +13,14 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 
 class BackendLayoutTemplateService implements SingletonInterface
 {
+    const COLPOS_OFFSET = 10000;
+
     public function combineTemplatesAndLayouts(array $templates, array $layouts): array
     {
         $rows = [];
         $rowKey = 1;
         foreach ($layouts as $layout) {
-            $colPosOffset = $layout['uid'] * 10000;
+            $colPosOffset = $layout['uid'] * self::COLPOS_OFFSET;
 
             $key = $layout['template'];
             if (!isset($templates[$key])) {

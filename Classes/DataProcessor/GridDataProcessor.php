@@ -6,6 +6,40 @@ use LPS\DynBeLayouts\Service\BackendLayoutTemplateService;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
+/**
+ * Example Usage:
+ *
+ *  <f:section name="Main">
+ *      <f:for each="{gridByColumn}" as="gridElement">
+ *          <f:render section="{gridElement.template}" arguments="{_all}"/>
+ *      </f:for>
+ *  </f:section>
+ *
+ *  <f:section name="Container">
+ *      <div>
+ *          <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{colPos: gridElement.columns.0.colPos}"/>
+ *      </div>
+ *  </f:section>
+ *
+ *  <f:section name="ContainerRowSpan">
+ *      <div class="row">
+ *          <div class="col col-lg-5">
+ *              <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{colPos: gridElement.columns.1.colPos}"/>
+ *          </div>
+ *          <div class="col col-lg-7">
+ *              <div class="row">
+ *                  <div class="col col-lg-6">
+ *                      <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{colPos: gridElement.columns.0.colPos}"/>
+ *                      <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{colPos: gridElement.columns.3.colPos}"/>
+ *                  </div>
+ *                  <div class="col col-lg-6">
+ *                      <f:cObject typoscriptObjectPath="lib.dynamicContent" data="{colPos: gridElement.columns.2.colPos}"/>
+ *                  </div>
+ *              </div>
+ *          </div>
+ *      </div>
+ *  </f:section>
+ */
 class GridDataProcessor implements DataProcessorInterface
 {
     public function __construct(
@@ -31,46 +65,30 @@ class GridDataProcessor implements DataProcessorInterface
         $templates = $this->templateService->getTemplates((int)$cObj->data['uid']);
         $backendLayoutRows = $this->templateService->combineTemplatesAndLayouts($templates, $layoutRows);
 
-        $rows = [];
+        $groups = [];
+        $byColumn = [];
         foreach ($backendLayoutRows as $row) {
-            $newRow = [
+            $id = $row['templateId'];
+            $groups[$id] ??= [
                 'template' => $row['template'],
-                'templateId' => $row['templateId'],
+                'rows' => [],
+            ];
+
+            $byColumn[$id] ??= [
+                'template' => $row['template'],
                 'columns' => [],
             ];
-            foreach ($row['columns.'] as $column) {
-                $newRow['columns'][] = $column;
-            }
-            $rows[] = $newRow;
-        }
 
-        $current = null;
-        $currentGroup = [];
-        $groups = [];
-        foreach ($rows as $row) {
-            $id = $row['templateId'];
-            if ($id !== $current) {
-                $current = $id;
-                if (count($currentGroup) > 0) {
-                    $groups[] = [
-                        'template' => $row['template'],
-                        'rows' => $currentGroup,
-                    ];
-                }
-                $currentGroup = [];
+            $groups[$id]['rows'][] = array_values($row['columns.']);
+            foreach ($row['columns.'] as $col) {
+                $colPos = $col['colPos'] % BackendLayoutTemplateService::COLPOS_OFFSET;
+                $byColumn[$id]['columns'][$colPos] = $col;
             }
-            $currentGroup[] = $row['columns'];
         }
-
-        if (count($currentGroup) > 0) {
-            $groups[] = [
-                'template' => $row['template'],
-                'rows' => $currentGroup,
-            ];
-        }
+        $groups = array_values($groups);
 
         $processedData['grid'] = $groups;
-
+        $processedData['gridByColumn'] = $byColumn;
         return $processedData;
     }
 }
