@@ -9,13 +9,9 @@ use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
-use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 class DynamicBackendLayoutProvider implements DataProviderInterface
 {
@@ -29,7 +25,7 @@ class DynamicBackendLayoutProvider implements DataProviderInterface
     public function addBackendLayouts(
         DataProviderContext $dataProviderContext,
         BackendLayoutCollection $backendLayoutCollection,
-    ) {
+    ): void {
         $backendLayoutCollection->add($this->createBackendLayout('dummy', $dataProviderContext->getData()));
     }
 
