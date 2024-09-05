@@ -34,7 +34,7 @@ class DynamicBackendLayoutProvider implements DataProviderInterface
         if ($identifier !== 'dummy') {
             return null;
         }
-        $row = BackendUtility::getRecord('pages', $pageId);
+        $row = BackendUtility::getRecordWSOL('pages', $pageId);
         return $this->createBackendLayout($identifier, $row);
     }
 
