@@ -23,6 +23,9 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
+        'security' => [
+            'ignorePageTypeRestriction' => true,
+        ],
         'typeicon_classes' => [
             'default' => 'dyn_be_layouts-ext-icon',
         ],
