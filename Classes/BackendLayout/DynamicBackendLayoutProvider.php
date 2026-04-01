@@ -2,6 +2,7 @@
 
 namespace LPS\DynBeLayouts\BackendLayout;
 
+use LFM\Lfmcore\Utility\DebuggerUtility;
 use LPS\DynBeLayouts\Service\BackendLayoutTemplateService;
 use LPS\DynBeLayouts\Utility\BackendLayoutUtility;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -35,6 +36,10 @@ class DynamicBackendLayoutProvider implements DataProviderInterface
 
     public function getBackendLayout($identifier, $pageId): ?BackendLayout
     {
+        $pageTsConfig = $this->getPageTsConfig(null, $pageId);
+        if (!array_key_exists('tx_dynbelayouts.', $pageTsConfig)) {
+            return $this->pageTsBackendLayoutDataProvider->getBackendLayout($identifier, $pageId);
+        }
         $row = BackendUtility::getRecordWSOL('pages', $pageId);
         return $this->createBackendLayout($identifier, $row);
     }
@@ -54,5 +59,20 @@ class DynamicBackendLayoutProvider implements DataProviderInterface
     {
         $message = new FlashMessage($message, $title, $severity, true);
         $this->flashMessageService->getMessageQueueByIdentifier()->addMessage($message);
+    }
+
+    /**
+     * Gets page TSconfig from DataProviderContext if available from context,
+     * else fetch from BackendUtility by pageId.
+     */
+    private function getPageTsConfig(?DataProviderContext $dataProviderContext, ?int $pageId): array
+    {
+        if ($dataProviderContext === null && $pageId === null) {
+            throw new \RuntimeException('Either $dataProviderContext or $pageId must be provided', 1676380686);
+        }
+        if ($dataProviderContext) {
+            return $dataProviderContext->pageTsConfig;
+        }
+        return BackendUtility::getPagesTSconfig($pageId);
     }
 }
