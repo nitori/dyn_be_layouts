@@ -9,48 +9,45 @@ use TYPO3\CMS\Backend\View\BackendLayout\BackendLayout;
 use TYPO3\CMS\Backend\View\BackendLayout\BackendLayoutCollection;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderContext;
 use TYPO3\CMS\Backend\View\BackendLayout\DataProviderInterface;
+use TYPO3\CMS\Backend\View\BackendLayout\PageTsBackendLayoutDataProvider;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class DynamicBackendLayoutProvider implements DataProviderInterface
 {
+    protected PageTsBackendLayoutDataProvider $pageTsBackendLayoutDataProvider;
 
     public function __construct(
         protected FlashMessageService $flashMessageService,
         protected BackendLayoutTemplateService $templateService,
     ) {
+        $this->pageTsBackendLayoutDataProvider = GeneralUtility::makeInstance(PageTsBackendLayoutDataProvider::class);
     }
 
     public function addBackendLayouts(
         DataProviderContext $dataProviderContext,
         BackendLayoutCollection $backendLayoutCollection,
     ): void {
-        $backendLayoutCollection->add($this->createBackendLayout('dummy', $dataProviderContext->getData()));
+        $this->pageTsBackendLayoutDataProvider->addBackendLayouts($dataProviderContext, $backendLayoutCollection);
     }
 
     public function getBackendLayout($identifier, $pageId): ?BackendLayout
     {
-        if ($identifier !== 'dummy') {
-            return null;
-        }
         $row = BackendUtility::getRecordWSOL('pages', $pageId);
         return $this->createBackendLayout($identifier, $row);
     }
 
     protected function createBackendLayout($identifier, $row): ?BackendLayout
     {
-        if ($identifier !== 'dummy') {
-            return null;
-        }
-
         $layoutRows = $this->templateService->getDefinedLayoutRecords((int)$row['uid']);
         $templates = $this->templateService->getTemplates((int)$row['uid']);
         $rows = $this->templateService->combineTemplatesAndLayouts($templates, $layoutRows);
 
         $config = BackendLayoutUtility::normalizeConfig(['rows.' => $rows]);
         $backendLayoutStr = BackendLayoutUtility::convertArrayToTypoScript(['backend_layout.' => $config]);
-        return new BackendLayout('dummy', 'Dynamic Backend Layout', $backendLayoutStr);
+        return new BackendLayout($identifier, 'Dynamic Backend Layout', $backendLayoutStr);
     }
 
     protected function flash(string $message, string $title = '', ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::OK): void

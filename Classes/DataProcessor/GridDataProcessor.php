@@ -3,6 +3,7 @@
 namespace LPS\DynBeLayouts\DataProcessor;
 
 use LPS\DynBeLayouts\Service\BackendLayoutTemplateService;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
 
@@ -10,7 +11,7 @@ use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
  * Example Usage:
  *
  *  <f:section name="Main">
- *      <f:for each="{gridByColumn}" as="gridElement">
+ *      <f:for each="{grids}" as="gridElement">
  *          <f:render section="{gridElement.template}" arguments="{_all}"/>
  *      </f:for>
  *  </f:section>
@@ -40,6 +41,10 @@ use TYPO3\CMS\Frontend\ContentObject\DataProcessorInterface;
  *      </div>
  *  </f:section>
  */
+#[Autoconfigure(
+    tags: [['name' => 'data.processor', 'identifier' => 'belayout-grid-data']],
+    public: true
+)]
 class GridDataProcessor implements DataProcessorInterface
 {
     public function __construct(
@@ -47,48 +52,39 @@ class GridDataProcessor implements DataProcessorInterface
     ) {
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function process(ContentObjectRenderer $cObj, array $contentObjectConfiguration, array $processorConfiguration, array $processedData)
-    {
+    public function process(
+        ContentObjectRenderer $cObj,
+        array $contentObjectConfiguration,
+        array $processorConfiguration,
+        array $processedData
+    ): array {
         if ($cObj->getCurrentTable() !== 'pages') {
             return $processedData;
         }
 
         $pageLayout = $cObj->getData('pagelayout');
-        if ($pageLayout !== 'lps_dynbelayouts__dummy') {
-            return $processedData;
-        }
 
         $layoutRows = $this->templateService->getDefinedLayoutRecords((int)$cObj->data['uid']);
         $templates = $this->templateService->getTemplates((int)$cObj->data['uid']);
         $backendLayoutRows = $this->templateService->combineTemplatesAndLayouts($templates, $layoutRows);
 
-        $groups = [];
-        $byColumn = [];
+        $grids = [];
         foreach ($backendLayoutRows as $row) {
             $id = $row['templateId'];
-            $groups[$id] ??= [
-                'template' => $row['template'],
-                'rows' => [],
-            ];
 
-            $byColumn[$id] ??= [
+            $grids[$id] ??= [
                 'template' => $row['template'],
                 'columns' => [],
             ];
 
-            $groups[$id]['rows'][] = array_values($row['columns.']);
             foreach ($row['columns.'] as $col) {
                 $colPos = $col['colPos'] % BackendLayoutTemplateService::COLPOS_OFFSET;
-                $byColumn[$id]['columns'][$colPos] = $col;
+                $grids[$id]['columns'][$colPos] = $col;
             }
         }
-        $groups = array_values($groups);
 
-        $processedData['grid'] = $groups;
-        $processedData['gridByColumn'] = $byColumn;
+        $as = $cObj->stdWrapValue('as', $processorConfiguration, 'grids');
+        $processedData[$as] = $grids;
         return $processedData;
     }
 }

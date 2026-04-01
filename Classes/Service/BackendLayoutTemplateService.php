@@ -13,7 +13,7 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 
 class BackendLayoutTemplateService implements SingletonInterface
 {
-    const COLPOS_OFFSET = 10000;
+    const int COLPOS_OFFSET = 10000;
 
     public function combineTemplatesAndLayouts(array $templates, array $layouts): array
     {
@@ -72,7 +72,10 @@ class BackendLayoutTemplateService implements SingletonInterface
     public function getTemplates(int $pageId): array
     {
         $tsConfig = BackendUtility::getPagesTSconfig($pageId);
-        $filesPaths = $tsConfig['tx_dynbelayouts.']['yamlFiles.'];
+        $filesPaths = $tsConfig['tx_dynbelayouts.']['yamlFiles.'] ?? [];
+        if (count($filesPaths) === 0) {
+            return [];
+        }
 
         $sortedKeys = ArrayUtility::filterAndSortByNumericKeys($filesPaths);
         $templates = [];
