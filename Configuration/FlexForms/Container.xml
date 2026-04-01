@@ -1,0 +1,28 @@
+<T3DataStructure>
+    <ROOT>
+        <type>array</type>
+        <el>
+            <background>
+                <label>Background color</label>
+                <config>
+                    <type>select</type>
+                    <renderType>selectSingle</renderType>
+                    <items>
+                        <numIndex index="0">
+                            <value>transparent</value>
+                            <label>Default</label>
+                        </numIndex>
+                        <numIndex index="1">
+                            <value>white</value>
+                            <label>White</label>
+                        </numIndex>
+                        <numIndex index="2">
+                            <value>dark</value>
+                            <label>Dark</label>
+                        </numIndex>
+                    </items>
+                </config>
+            </background>
+        </el>
+    </ROOT>
+</T3DataStructure>

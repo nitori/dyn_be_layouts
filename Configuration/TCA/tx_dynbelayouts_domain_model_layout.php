@@ -35,6 +35,7 @@ return [
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
                 title,
                 template,
+                flexform,
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,
                 --palette--;;language,
             --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access,
@@ -149,6 +150,20 @@ return [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'itemsProcFunc' => \LPS\DynBeLayouts\Utility\BackendLayoutUtility::class . '->getBackendLayoutsForTca',
+            ],
+        ],
+        'flexform' => [
+            'exclude' => false,
+            'label' => 'Settings',
+            'config' => [
+                'type' => 'flex',
+                'ds_pointerField' => 'template',
+                'ds' => [
+                    'default' => '<T3DataStructure> <ROOT> <type>array</type> <el> <!-- Repeat an element like "xmlTitle" beneath for as many elements you like. Remember to name them uniquely --> <xmlTitle> <label>The Title:</label> <config> <type>input</type> <size>48</size> </config> </xmlTitle> </el> </ROOT> </T3DataStructure>',
+
+                    'Container' => 'FILE:EXT:dyn_be_layouts/Configuration/FlexForms/Container.xml',
+                    'ContainerRowSpan' => 'FILE:EXT:dyn_be_layouts/Configuration/FlexForms/ContainerRowSpan.xml',
+                ],
             ],
         ],
     ],

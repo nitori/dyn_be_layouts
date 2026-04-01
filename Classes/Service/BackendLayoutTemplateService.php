@@ -6,6 +6,7 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -17,6 +18,8 @@ class BackendLayoutTemplateService implements SingletonInterface
 
     public function combineTemplatesAndLayouts(array $templates, array $layouts): array
     {
+        $flexFormService = GeneralUtility::makeInstance(FlexFormService::class);
+
         $rows = [];
         $rowKey = 1;
         foreach ($layouts as $layout) {
@@ -40,6 +43,9 @@ class BackendLayoutTemplateService implements SingletonInterface
 
                 $row['template'] = $key;
                 $row['templateId'] = $layout['uid'];
+                if (!empty($layout['flexform'])) {
+                    $row['settings'] = $flexFormService->convertFlexFormContentToArray($layout['flexform']);
+                }
                 $rows[$rowKey . '.'] = $row;
                 $rowKey++;
             }
@@ -55,7 +61,7 @@ class BackendLayoutTemplateService implements SingletonInterface
             ->removeAll()
             ->add(GeneralUtility::makeInstance(DeletedRestriction::class));
 
-        $rows = $queryBuilder->select('uid', 'title', 'template')
+        $rows = $queryBuilder->select('uid', 'title', 'template', 'flexform')
             ->from('tx_dynbelayouts_domain_model_layout')
             ->where(
                 'page=' . $pageId
@@ -128,6 +134,10 @@ class BackendLayoutTemplateService implements SingletonInterface
                 $result[($r + 1) . '.'] = ['columns.' => []];
                 ksort($row);
                 foreach (array_values($row) as $c => $col) {
+                    if (isset($col['colPos'])) {
+                        $col['identifier'] = $identifier . '_' . $col['colPos'];
+                    }
+
                     $result[($r + 1) . '.']['columns.'][($c + 1) . '.'] = $col;
                     if (isset($col['colPos'])) {
                         $result[($r + 1) . '.']['columns.'][($c + 1) . '.']['name'] = $columnTitles[$col['colPos']] ?? 'Column ' . ($c + 1);
